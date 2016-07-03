@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 // Cache that uses finalize to revive objects.
@@ -18,9 +19,12 @@ namespace ConsoleApplication
 
     class MyCache
     {
-		Dictionary  refs = null;
+		// Dictionary to contain the cache.
+        static Dictionary<string, WeakReference> _cache;
+        static ArrayList _lru = new ArrayList();
+
 		
-		MyCache()
+		public MyCache(int size)
         {
 
         }
