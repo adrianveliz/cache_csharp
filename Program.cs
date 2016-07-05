@@ -115,10 +115,10 @@ namespace ConsoleApplication
             return _value.Equals(mco.ToString());
         }
 
-		public override int GetHashCode()
-		{
-			return this.ToString().GetHashCode();
-		}
+        public override int GetHashCode()
+        {
+            return this.ToString().GetHashCode();
+        }
 
         public void setCache(MyCache cache)
         {
