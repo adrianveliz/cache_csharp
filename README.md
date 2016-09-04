@@ -5,6 +5,7 @@ Cache in c#
 
 
 > dotnet restore
+
 > dotnet run
 
 
@@ -13,6 +14,7 @@ Cache in c#
 Required: mono sdk installed
 
 > dmcs Program.cs
+
 > ./Program.exe
 
 
@@ -21,4 +23,5 @@ Required: mono sdk installed
 Required: Visual Studio Community Edition 2015
 
 > csc Program.cs
+
 > .\Program.exe
