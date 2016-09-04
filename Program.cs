@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
+//using System.Collections.NonGeneric;
 
 // Cache that uses finalize to revive objects.
 // @author Adrian Veliz
