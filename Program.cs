@@ -80,7 +80,18 @@ namespace ConsoleApplication
         {
             if (_lru.Count >= _size)
             {
-                _lru.RemoveAt(_size);
+				try
+				{
+					_lru.RemoveAt(_size);
+				}
+				#pragma warning disable 0168
+				catch (System.ArgumentOutOfRangeException ex)
+				#pragma warning restore 0168				
+				{
+					//This will never happen but DMCS complains that this
+					// exception is not caught. The complier will then 
+					// complain that the variable is never used.
+				}
             }
         }
 
