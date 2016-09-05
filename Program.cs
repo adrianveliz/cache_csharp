@@ -49,7 +49,8 @@ namespace ConsoleApplication
             try
             {
                 value.setCache(this);
-                _cache.Add(key, new WeakReference(value));
+                // ressurection tracking enabled, allow calls to get during EWR
+                _cache.Add(key, new WeakReference(value, true));//ressurection tracking enabled 
             }
             catch (ArgumentException)
             {
