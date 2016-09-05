@@ -15,19 +15,31 @@ namespace ConsoleApplication
     {
         public static void Main(string[] args)
         {
+
+	    #pragma warning disable 219
             int size = 20;
             MyCache cache = new MyCache(size);
-            MyCacheableObject mco = null;
-            for (int i = 0; i < size + size / 2; i++)
+            MyCacheableObject mco = new MyCacheableObject("0");
+            for (int i = 1; i < 20; i++)
             {
-                mco = new MyCacheableObject(i + "");
-                cache.addEntry(i.ToString(), mco);
+                MyCacheableObject temp = new MyCacheableObject(i + "");
+                cache.addEntry(i.ToString(), temp);
             }
 
             Console.WriteLine("Count of elements in LRU before GC: " + cache.LRUCount());
             GC.Collect();//All but one entry will be finalized
-            System.Threading.Thread.Sleep(2000);//Make time for finalize to run
+	    MyCacheableObject mco2 = cache.getEntry("15");//Example of getting object before finalize
+            System.Threading.Thread.Sleep(500);//Make time for finalize to run
             Console.WriteLine("Count of elements in LRU after GC: " + cache.LRUCount());
+	    GC.Collect();
+	    mco2 = null;
+	    System.Threading.Thread.Sleep(500);//Make time for finalize to run
+	    Console.WriteLine("Count of elements in LRU after second GC: " + cache.LRUCount());
+	    	    GC.Collect();
+	    System.Threading.Thread.Sleep(500);//Make time for finalize to run
+	    Console.WriteLine("Count of elements in LRU after third GC: " + cache.LRUCount());
+	    mco = null;
+	    #pragma warning restore 219
         }
     }
 
@@ -42,6 +54,7 @@ namespace ConsoleApplication
         {
             _cache = new Dictionary<string, WeakReference>();
             _lru = new ArrayList();
+	    _size = size;
         }
 
         public void addEntry(string key, MyCacheableObject value)
@@ -65,6 +78,7 @@ namespace ConsoleApplication
                 MyCacheableObject mco = _cache[key].Target as MyCacheableObject;
                 GC.ReRegisterForFinalize(mco);
                 _lru.Remove(mco);
+		mco.setGet(true);
                 return mco;
             }
             return null;
@@ -79,19 +93,20 @@ namespace ConsoleApplication
 
         public void evict()
         {
-            if (_lru.Count >= _size)
+            if (_lru.Count >= _size && _size > 0)
             {
 				try
 				{
-					_lru.RemoveAt(_size);
+					_lru.RemoveAt(_size-1);
 				}
 				#pragma warning disable 0168
 				catch (System.ArgumentOutOfRangeException ex)
 				#pragma warning restore 0168				
 				{
-					//This will never happen but DMCS complains that this
+					//This should not happen but DMCS complains that this
 					// exception is not caught. The complier will then 
 					// complain that the variable is never used.
+				    Console.WriteLine("Hmmm.... You should not be seeing this.");
 				}
             }
         }
@@ -107,6 +122,7 @@ namespace ConsoleApplication
         //WeakReference _cache = null;
         MyCache _cache;
         string _value;
+	bool _get = false;
 
         public MyCacheableObject(string value)
         {
@@ -139,20 +155,37 @@ namespace ConsoleApplication
             _cache = cache;
         }
 
+	public bool gotten()
+	{
+	    return this._get;
+	}
+
+	public void setGet(bool gotten)
+	{
+	    this._get = gotten;
+	}
+
         ~MyCacheableObject()
         {
             //MyCache cache = _cache.Target as MyCache;
             if (_cache != null)
             {
-
-                _cache.LRU(this);
+		if(this.gotten())//this object has been gotten, second chance before adding to LRU
+		{
+		    this.setGet(false);
+		}
+		else
+		{    
+		    _cache.LRU(this);
+		}
+		GC.SuppressFinalize(this);//I know this looks weird, trust me. Don't delete
                 GC.ReRegisterForFinalize(this);
             }
             else
             {
                 //This call to suppress is not necessary since it was not reregistered
                 GC.SuppressFinalize(this);
-                Console.WriteLine("Cache does not exist. Do not revive.");
+            //    Console.WriteLine("Cache does not exist. Do not revive.");
             }
         }
     }
