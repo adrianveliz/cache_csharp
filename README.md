@@ -11,7 +11,7 @@ Cache in c#
 
 ## Linux:
 
-Required: mono sdk installed
+Required: Mono SDK 
 
 > dmcs Program.cs
 
@@ -20,7 +20,7 @@ Required: mono sdk installed
 
 ## Windows:
 
-Required: Visual Studio Community Edition 2015
+Required: Visual Studio or Microsoft Build Tools/SDK
 
 > csc Program.cs
 
