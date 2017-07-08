@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,33 +13,48 @@ namespace ConsoleApplication
 {
 	public class Program
 	{
+		public static MyCacheableObject mco = null;
 		public static void Main(string[] args)
 		{
 
 			#pragma warning disable 219
 			int size = 20;
 			MyCache cache = new MyCache(size);
-			MyCacheableObject mco = new MyCacheableObject("0");
-			for (int i = 1; i < 20; i++)
+			mco = new MyCacheableObject("0");
+			cache.addEntry("0", mco);
+
+			for (int i = 1; i < 5; i++)
 			{
-				MyCacheableObject temp = new MyCacheableObject(i + "");
+				MyCacheableObject temp = new MyCacheableObject(i.ToString());
 				cache.addEntry(i.ToString(), temp);
+				temp = null;//csc and dotnet require this in order to work correctly, dmcs does not
 			}
 
-			Console.WriteLine("Count of elements in LRU before GC: " + cache.LRUCount());
+			sleepAndPrintCount(cache);
+
+
 			GC.Collect();//All but one entry will be finalized
-			MyCacheableObject mco2 = cache.getEntry("15");//Example of getting object before finalize
-			System.Threading.Thread.Sleep(500);//Make time for finalize to run
-			Console.WriteLine("Count of elements in LRU after GC: " + cache.LRUCount());
-			GC.Collect();
+			MyCacheableObject mco2 = cache.getEntry("3");//Example of getting object before finalize
+			sleepAndPrintCount(cache);
+			Console.WriteLine("One entry reachable from root set, another entry gotten after gc before finalize so it is not tracked.");
+
 			mco2 = null;
-			System.Threading.Thread.Sleep(500);//Make time for finalize to run
-			Console.WriteLine("Count of elements in LRU after second GC: " + cache.LRUCount());
 			GC.Collect();
-			System.Threading.Thread.Sleep(500);//Make time for finalize to run
-			Console.WriteLine("Count of elements in LRU after third GC: " + cache.LRUCount());
+			sleepAndPrintCount(cache);
+			Console.WriteLine("One entry reachable from root set, second chance added to lru tracking");
+
+			
 			mco = null;
+			GC.Collect();
+			sleepAndPrintCount(cache);
+			Console.WriteLine("All entries should now be lru tracked");
 			#pragma warning restore 219
+		}
+
+		public static void sleepAndPrintCount(MyCache cache)
+		{
+			System.Threading.Thread.Sleep(1000);//Make time for finalize to run
+			Console.WriteLine("Count of elements: " + cache.LRUCount());
 		}
 	}
 
@@ -63,6 +78,8 @@ namespace ConsoleApplication
 			{
 				value.setCache(this);
 				// ressurection tracking enabled, allow calls to get during EWR
+				//GC.SuppressFinalize(this);
+				//GC.ReRegisterForFinalize(this);
 				_cache.Add(key, new WeakReference(value, true));//ressurection tracking enabled 
 			}
 			catch (ArgumentException)
@@ -76,6 +93,7 @@ namespace ConsoleApplication
 			if (_cache.ContainsKey(key))
 			{
 				MyCacheableObject mco = _cache[key].Target as MyCacheableObject;
+				GC.SuppressFinalize(mco);
 				GC.ReRegisterForFinalize(mco);
 				_lru.Remove(mco);
 				mco.setGet(true);
@@ -170,6 +188,7 @@ namespace ConsoleApplication
 			//MyCache cache = _cache.Target as MyCache;
 			if (_cache != null)
 			{
+				Console.WriteLine("Finalized: " + this._value);
 				if(this.gotten())//this object has been gotten, second chance before adding to LRU
 				{
 					this.setGet(false);
@@ -178,7 +197,7 @@ namespace ConsoleApplication
 				{
 					_cache.LRU(this);
 				}
-				GC.SuppressFinalize(this);//I know this looks weird, trust me. Don't delete
+				//GC.SuppressFinalize(this);//I know this looks weird, trust me. Don't delete
 				GC.ReRegisterForFinalize(this);
 			}
 			else
