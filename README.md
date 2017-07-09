@@ -4,7 +4,7 @@ FinalCache uses LRU to evict entries. However it does not use access-history to 
 ## .NET Core (Cross-Platform)
 
 
-> dotnet restore
+> dotnet build
 
 > dotnet run
 
