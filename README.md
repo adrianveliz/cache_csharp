@@ -1,5 +1,5 @@
-# cache_csharp
-Cache in c#
+# FinalCache
+FinalCache uses LRU to evict entries. However it does not use access-history to compute LRU. Rather when objects become unused they become managed by LRU. Usage is determined by the garbage collector.
 
 ## .NET Core (Cross-Platform)
 
