@@ -6,7 +6,7 @@ FinalCache uses LRU to evict entries. However it does not use access-history to 
 
 > dotnet build
 
-> dotnet run
+> dotnet run --configuration Release
 
 
 ## Linux:
