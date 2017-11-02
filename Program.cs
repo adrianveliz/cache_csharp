@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 //using System.Collections.NonGeneric;
 
-// Simple LRU cache
+// Simple LRU cache using 
 // @author Aleksandr S Diamond
 // 
 
@@ -17,102 +17,86 @@ namespace ConsoleApplication
 		public static MyCacheableObject mco = null;
 		public static void Main(string[] args)
 		{
-
 			//#pragma warning disable 219
-			int size = 20;
+			int size = 6;
 			MyCache cache = new MyCache(size);
-			mco = new MyCacheableObject("0");
-			cache.addEntry("0", mco);
+			//mco = new MyCacheableObject("0");
+			//cache.addEntry("0", mco);
 
-			for (int i = 1; i < 5; i++)
+			for (int i = 0; i < size; i++)
 			{
 				MyCacheableObject temp = new MyCacheableObject(i.ToString());
 				cache.addEntry(i.ToString(), temp);
 				temp = null;//csc and dotnet require this in order to work correctly, dmcs does not
 			}
-			//printCache(cache);
-			MyCacheableObject mco2 = cache.getEntry("3");//Example of getting object before finalize
-			Console.WriteLine("after a get");
-			//printCache(cache);
+			Console.WriteLine("Before a get");
+			cache.printCache();
+
+			cache.getEntry("3");//Example of getting object before finalize
+
+			Console.WriteLine("after a get 3");
+			cache.printCache();
+			
+			cache.getEntry("2");
+			Console.WriteLine("after a get 2");
+			cache.printCache();
+			
+			cache.getEntry("1");
+			Console.WriteLine("after a get 1");
+			cache.printCache();
+
+			cache.addEntry("10", new MyCacheableObject("10"));
+			Console.WriteLine("After adding 10");
+			cache.printCache();
 		}
-
-		/*
-		public static void sleepAndPrintCount(MyCache cache)
-		{
-			System.Threading.Thread.Sleep(1000);//Make time for finalize to run
-			Console.WriteLine("Count of elements: " + cache.LRUCount());
-		}
-		*/ 
-
-		/* To display dictionary contents */
-		static void DisplayContents(
-        		ICollection keyCollection, ICollection valueCollection, int dictionarySize)
-    		{
-        		String[] myKeys = new String[dictionarySize];
-        		String[] myValues = new String[dictionarySize];
-        		keyCollection.CopyTo(myKeys, 0);
-        		valueCollection.CopyTo(myValues, 0);
-
-        		// Displays the contents of the OrderedDictionary
-        		Console.WriteLine("   INDEX KEY                       VALUE");
-        		for (int i = 0; i < dictionarySize; i++)
-        		{
-            			Console.WriteLine("   {0,-5} {1,-25} {2}",
-                			i, myKeys[i], myValues[i]);
-        		}
-        		Console.WriteLine();
-    		}
-		
-		public static void printCache(MyCache cache)
-		{
-			DisplayContents(cache.getLruCache().Keys, cache.getLruCache().Values, cache.getLruCache().Count);
-		}
-
 	}
 
 	public class MyCache
 	{
 		// Dictionary to contain the cache.
-		//static Dictionary<string, MyCacheableObject> _cache;
-		//static ArrayList _lru;
-
-		//Ordered Dictionary for the cache
-		OrderedDictionary _lrucache;
+		Dictionary<String, MyCacheableObject> _cache;
+		ArrayList _lru;
 		static int _size = 50;
 
 		public MyCache(int size)
 		{
-			_lrucache = new OrderedDictionary();
 			_size = size;
-		}
-
-		public OrderedDictionary getLruCache() 
-		{
-			return _lrucache;
+			_lru = new ArrayList();
+			_cache = new Dictionary<String, MyCacheableObject>();
 		}
 		
-		public void addEntry(string key, MyCacheableObject value)
+		public void printCache()
+		{
+			foreach(MyCacheableObject val in _lru){
+				Console.WriteLine(val);
+			}
+		}
+		
+		public void addEntry(String key, MyCacheableObject value)
 		{
 			try
 			{
+				if(_lru.Count >= _size){
+					evict();
+				}
 				value.setCache(this);
-				_lrucache.Add(key, value);
+				_cache.Add(key, value);
+				_lru.Insert(0, value);
 			}
 			catch (ArgumentException)
 			{
-				//lru.Remove(value);//does nothing if does not exist, O(n)
+				_lru.Remove(value);//does nothing if does not exist, O(n)
 				Console.WriteLine("ArgumentException in addEntry");
 			}
 		}
 
-		public MyCacheableObject getEntry(string key)
+		public MyCacheableObject getEntry(String key)
 		{
-			if (_lrucache.Contains(key))
+			if (_cache.ContainsKey(key))
 			{
-				//MyCacheableObject mco = _cache[key].Target as MyCacheableObject;
-				MyCacheableObject mco = _lrucache[key] as MyCacheableObject;
-				_lrucache.Remove(key);//remove by key given
-				_lrucache.Add(0, mco);//reorder, this is now the most recently used
+				MyCacheableObject mco = _cache[key] as MyCacheableObject;
+				_lru.Remove(_cache[key]);//remove by key given
+				_lru.Insert(0, mco);//reorder, this is now the most recently used
 				return mco;
 			}
 			return null;
@@ -127,24 +111,24 @@ namespace ConsoleApplication
 		public void LRU(MyCacheableObject mco)
 		{
 			//GC.SuppressFinalize(mco);
-			_lrucache.Add(0, mco);
+			_lru.Insert(0, mco);
 			evict();
 		}
 
 		//evict the least recently used, bottom of cache
 		public void evict()
 		{
-			if (_lrucache.Count >= _size && _size > 0)
+			if (_lru.Count >= _size && _size > 0)
 			{
 				try
 				{
-					_lrucache.RemoveAt(_size - 1);
+					_lru.RemoveAt(_size - 1);
 				}
 				#pragma warning disable 0168
 				catch (System.ArgumentOutOfRangeException ex)
 				#pragma warning restore 0168
 				{
-					//This should not happen but DMCS complains that this
+					// This should not happen but DMCS complains that this
 					// exception is not caught. The complier will then 
 					// complain that the variable is never used.
 					Console.WriteLine("Hmmm.... You should not be seeing this.");
@@ -156,7 +140,7 @@ namespace ConsoleApplication
 
 		public int LRUCount()
 		{
-			return _lrucache.Count;
+			return _lru.Count;
 		}
 	}
 
