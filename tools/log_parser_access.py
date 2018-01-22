@@ -3,32 +3,13 @@ import pprint
 from collections import defaultdict
 from datetime import datetime
 
-#pretty prints dictionary
-def prettyPrinter(dictionary):
-	pprint.isrecursive(dictionary)
-	pp = pprint.PrettyPrinter(indent=3, width=1)
-	for x in dictionary:
-		pp.pprint(x)
-		for y in x:
-			pp.pprint(dictionary[x])
-
-def includeLine(log, notAccessLogs):
-	for x in notAccessLogs:
-		if x in log:
-			return True
-	return False
-
-def excludeLine(log, notAccessLogs):
-	for x in notAccessLogs:
-		if x in log:
-			return False 
-	return True
-
+#considered an access
 accesses = ['CacheFileOutputStream::Write', 'CacheFileChunk::Write', 'CacheFileIOManager::Write()']
 
 removalDict = defaultdict(str)
 newEntryDict = defaultdict(str)
 accessDict = defaultdict(list) 
+
 #only need times
 timesDict = defaultdict(str)
 doomDict = defaultdict(str)

@@ -3,17 +3,29 @@ using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-//using System.Collections.NonGeneric;
 
-// Simple LRU cache using 
 // @author Aleksandr S Diamond
-// 
 
 
 namespace ConsoleApplication
 {
 	public class Program
 	{
+		//what is considered an acccess from before
+		string[] accesses = {"CacheFileOutputStream::Write", "CacheFileChunk::Write", "CacheFileIOManager::Write()"};
+		public static bool isDoom(string log){
+			return log.Equals("dooming entry");
+		}
+
+		public static bool isNewEntry(string log){
+			return log.Equals("new entry");	
+		}
+
+		public static bool isRemoved(string log){
+			return log.Equals("RemoveExactEntry");
+		}
+
+
 		public static MyCacheableObject mco = null;
 		public static void Main(string[] args)
 		{
@@ -22,6 +34,18 @@ namespace ConsoleApplication
 			MyCache cache = new MyCache(size);
 			//mco = new MyCacheableObject("0");
 			//cache.addEntry("0", mco);
+			//
+
+			//read all lines from stdin
+			string log;
+			while((log = Console.ReadLine()) != null){
+				if(isDoom(log)){
+				}
+				if(isNewEntry(log)){
+				}
+				if(isRemoved(log)){
+				}
+			}
 
 			for (int i = 0; i < size; i++)
 			{
@@ -29,25 +53,7 @@ namespace ConsoleApplication
 				cache.addEntry(i.ToString(), temp);
 				temp = null;//csc and dotnet require this in order to work correctly, dmcs does not
 			}
-			Console.WriteLine("Before a get");
-			cache.printCache();
 
-			cache.getEntry("3");//Example of getting object before finalize
-
-			Console.WriteLine("after a get 3");
-			cache.printCache();
-			
-			cache.getEntry("2");
-			Console.WriteLine("after a get 2");
-			cache.printCache();
-			
-			cache.getEntry("1");
-			Console.WriteLine("after a get 1");
-			cache.printCache();
-
-			cache.addEntry("10", new MyCacheableObject("10"));
-			Console.WriteLine("After adding 10");
-			cache.printCache();
 		}
 	}
 
