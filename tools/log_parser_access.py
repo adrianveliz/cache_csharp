@@ -18,6 +18,7 @@ for line in sys.stdin:
 	#assuming some lines dont 
 	#contain this string
 	if "dooming entry" in line:
+            #first is 
 		doomDict[line[line.index("dooming entry") + 14 : line.index("dooming entry") + 27 :]] = line
 		timesDict[datetime.strptime(line[0 : line.index(" UTC") :], '%Y-%m-%d %H:%M:%S.%f')] = line
 	#no method is called.. this is how its logged
@@ -26,9 +27,9 @@ for line in sys.stdin:
 		timesDict[datetime.strptime(line[0 : line.index(" UTC") :], '%Y-%m-%d %H:%M:%S.%f')] = line
 	if "this=" in line:
 		hexaddress = line[line.index("this=") + 5 : line.index("this=") + 18:]
-		if(includeLine(line, accesses)):
+	#	if(includeLine(line, accesses)):
 		#	accessDict[hexaddress].append(line)
-			timesDict[datetime.strptime(line[0 : line.index(" UTC") :], '%Y-%m-%d %H:%M:%S.%f')] = line
+	    	timesDict[datetime.strptime(line[0 : line.index(" UTC") :], '%Y-%m-%d %H:%M:%S.%f')] = line
 		#if(excludeLine(line, accesses)):
 			#dictionary[hexaddress].append(line)
 	if "RemoveExactEntry" in line:
@@ -39,6 +40,6 @@ for line in sys.stdin:
 #for x,y in accessDict.iteritems():
 	#print x, y
 for x,y in timesDict.iteritems():
-	print x, y
+	print y
 #for x,y in doomDict.iteritems():
 #	print x,y

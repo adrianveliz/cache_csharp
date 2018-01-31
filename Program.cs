@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 
 // @author Aleksandr S Diamond
+// program that tracks simple lru 
+// from stdin, which is supposed 
+// to be firefox logs
 
 
 namespace ConsoleApplication
@@ -30,29 +33,18 @@ namespace ConsoleApplication
 		public static void Main(string[] args)
 		{
 			//#pragma warning disable 219
-			int size = 6;
-			MyCache cache = new MyCache(size);
-			//mco = new MyCacheableObject("0");
-			//cache.addEntry("0", mco);
-			//
-
+			//int size = 6;
+			//MyCache cache = new MyCache(size);
+			ArrayList newEntrys = new ArrayList();
+			
 			//read all lines from stdin
 			string log;
 			while((log = Console.ReadLine()) != null){
-				if(isDoom(log)){
-				}
 				if(isNewEntry(log)){
-				}
-				if(isRemoved(log)){
+					newEntrys.Insert(0, log);
 				}
 			}
 
-			for (int i = 0; i < size; i++)
-			{
-				MyCacheableObject temp = new MyCacheableObject(i.ToString());
-				cache.addEntry(i.ToString(), temp);
-				temp = null;//csc and dotnet require this in order to work correctly, dmcs does not
-			}
 
 		}
 	}
