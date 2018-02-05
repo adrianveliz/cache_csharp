@@ -15,37 +15,72 @@ namespace ConsoleApplication
 	public class Program
 	{
 		//what is considered an acccess from before
-		string[] accesses = {"CacheFileOutputStream::Write", "CacheFileChunk::Write", "CacheFileIOManager::Write()"};
+		static string[] accesses = {
+			"CacheFileOutputStream::Write", 
+			"CacheFileChunk::Write", 
+			// "CacheFileIOManager::Write()"//not sure if this one is correct
+			"CacheFile::SetElement()"
+			};
+		public static bool isAccess(string log){
+			foreach(string tmp in accesses){
+				if(log.Contains(tmp)){
+					return true;
+				}
+			}
+			return false;
+		}
+
 		public static bool isDoom(string log){
-			return log.Equals("dooming entry");
+			return log.Contains("dooming entry");
 		}
 
 		public static bool isNewEntry(string log){
-			return log.Equals("new entry");	
+			return log.Contains("new entry");	
 		}
 
 		public static bool isRemoved(string log){
-			return log.Equals("RemoveExactEntry");
+			return log.Contains("RemoveExactEntry");
 		}
 
 
 		public static MyCacheableObject mco = null;
 		public static void Main(string[] args)
 		{
-			//#pragma warning disable 219
-			//int size = 6;
-			//MyCache cache = new MyCache(size);
-			ArrayList newEntrys = new ArrayList();
-			
-			//read all lines from stdin
-			string log;
+			int size = Int32.MaxValue;
+			int hits = 0;
+			int accesses = 0;
+			MyCache cache = new MyCache(size);
+			string log = null;
 			while((log = Console.ReadLine()) != null){
+				//need to get id of entries when they are created
+				//so i can 'get' them when accessed
 				if(isNewEntry(log)){
-					newEntrys.Insert(0, log);
+					//testing getting the id of this new entry log
+					int start = log.IndexOf("new entry") + 9;
+					int length = 13;
+					string hexid = log.Substring(start, length);//grabs the hex id
+					//add to cache
+					MyCacheableObject mco = new MyCacheableObject(log);
+					cache.addEntry(hexid, mco);//hexid is key, log in mco is val
+
+				} else if(isAccess(log)){
+					accesses++;
+					int start = log.IndexOf("this=");
+					int length = 13;
+					try{
+						string hexid = log.Substring(start, length);
+
+						if(cache.getEntry(hexid.Trim()) != null){
+							hits++;//not in cache
+						}
+					} catch(ArgumentOutOfRangeException){
+						Console.WriteLine("probably didnt have this= in it...");
+					}
 				}
 			}
-
-
+			double hitrate = (double)hits / (double)accesses;
+			Console.WriteLine("Accesses " + accesses);
+			Console.WriteLine("Hits " + hits);
 		}
 	}
 
