@@ -58,8 +58,8 @@ namespace ConsoleApplication
 				//so i can 'get' them when accessed
 				if(isNewEntry(log)){
 					//testing getting the id of this new entry log
-					int start = log.IndexOf("new entry") + 9;
-					int length = 13;
+					int start = log.IndexOf("new entry") + 10;
+					int length = 12;
 					string hexid = log.Substring(start, length);//grabs the hex id
 					//add to cache
 					MyCacheableObject mco = new MyCacheableObject(log);
@@ -67,7 +67,7 @@ namespace ConsoleApplication
 
 				} else if(isAccess(log)){
 					accesses++;
-					int start = log.IndexOf("this=");
+					int start = log.IndexOf("this=")+5;
 					int length = 13;
 					try{
 						string hexid = log.Substring(start, length);
