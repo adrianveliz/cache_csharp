@@ -18,8 +18,10 @@ namespace ConsoleApplication
 		static string[] accesses = {
 			"CacheFileOutputStream::Write", 
 			"CacheFileChunk::Write", 
-			// "CacheFileIOManager::Write()"//not sure if this one is correct
-			"CacheFile::SetElement()"
+			"CacheFileIOManager::Write()",//not sure if this one is correct
+			"CacheFile::SetElement()",
+			"CacheFileMetadata::GetElement()",
+			"CacheFileMetadata::SetElement()"
 			};
 		public static bool isAccess(string log){
 			foreach(string tmp in accesses){
