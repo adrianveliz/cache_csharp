@@ -14,15 +14,17 @@ namespace ConsoleApplication
 {
 	public class Program
 	{
-		//what is considered an acccess from before
+		//what is considered an acccess 
 		static string[] accesses = {
-			"CacheFileOutputStream::Write", 
-			"CacheFileChunk::Write", 
-			"CacheFileIOManager::Write()",//not sure if this one is correct
-			"CacheFile::SetElement()",
+			//"CacheFileOutputStream::Write", 
+			//"CacheFileChunk::Write", 
+			//"CacheFileIOManager::Write()",
+			//"CacheFile::SetElement()",
+			//added these after we started switch to URL based keys
 			"CacheFileMetadata::GetElement()",
 			"CacheFileMetadata::SetElement()"
 			};
+		//FIXME
 		public static bool isAccess(string log){
 			foreach(string tmp in accesses){
 				if(log.Contains(tmp)){
@@ -36,8 +38,14 @@ namespace ConsoleApplication
 			return log.Contains("dooming entry");
 		}
 
+		/*
+		* works pretty well except for some exceptional circumstances.
+		* Example:
+		* ID = 2 20:13:40.479597 UTC - [Main Thread]: D/cache2 CacheStorageService::AddStorageEntry [entryKey=~predictor-origin
+		* LOG = 2018-03-12 20:13:40.479597 UTC - [Main Thread]: D/cache2 CacheStorageService::AddStorageEntry [entryKey=~predictor-origin,:http://tags.bluekai.com/, contextKey=]
+		*/
 		public static bool isNewEntry(string log){
-			return log.Contains("new entry");	
+			return log.Contains("CacheStorageService::AddStorageEntry");	
 		}
 
 		public static bool isRemoved(string log){
@@ -58,13 +66,12 @@ namespace ConsoleApplication
 				//so i can 'get' them when accessed
 				if(isNewEntry(log)){
 					//testing getting the id of this new entry log
-					int start = log.IndexOf("new entry") + 10;
-					int length = 12;
-					string hexid = log.Substring(start, length);//grabs the hex id
+					int start = log.IndexOf("entryKey=:") + 10;
+					int length = log.IndexOf(",") - start;
+					string id = log.Substring(start, length);//grabs the url id of the entry.
 					//add to cache
 					MyCacheableObject mco = new MyCacheableObject(log);
-					cache.addEntry(hexid, mco);//hexid is key, log in mco is val
-
+					cache.addEntry(id, mco);//hexid is key, log in mco is val
 				} else if(isAccess(log)){
 					accesses++;
 					int start = log.IndexOf("this=")+5;
@@ -76,7 +83,7 @@ namespace ConsoleApplication
 							hits++;//not in cache
 						}
 					} catch(ArgumentOutOfRangeException){
-						Console.WriteLine("probably didnt have this= in it...");
+						//Console.WriteLine("probably didnt have this= in it...");
 					}
 				}
 			}
@@ -121,7 +128,7 @@ namespace ConsoleApplication
 			catch (ArgumentException)
 			{
 				_lru.Remove(value);//does nothing if does not exist, O(n)
-				Console.WriteLine("ArgumentException in addEntry");
+			//	Console.WriteLine("ArgumentException in addEntry");
 			}
 		}
 
@@ -232,7 +239,7 @@ namespace ConsoleApplication
 			//MyCache cache = _cache.Target as MyCache;
 			if (_cache != null)
 			{
-				Console.WriteLine("Finalized: " + this._value);
+				//Console.WriteLine("Finalized: " + this._value);
 				if(this.gotten())//this object has been gotten, second chance before adding to LRU
 				{
 					this.setGet(false);
