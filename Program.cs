@@ -25,6 +25,11 @@ namespace ConsoleApplication
 			"CacheFileMetadata::SetElement()"
 			};
 		//FIXME
+		//May only work in certain 'gets'
+		//Example, in the form:
+		//2018-03-12 20:13:34.674091 UTC - [Main Thread]: D/cache2 CacheFileMetadata::GetElement() - Key not found [this=7f7148731120, key=predictor::http://www.pages02.net/]
+		//After the key=predictor:: looks to be a candidate for the key
+		//Not very many logs are in this form.
 		public static bool isAccess(string log){
 			foreach(string tmp in accesses){
 				if(log.Contains(tmp)){
@@ -52,6 +57,10 @@ namespace ConsoleApplication
 			return log.Contains("RemoveExactEntry");
 		}
 
+		public static bool hasKey(string log){
+			return log.Contains("key=predictor::http"); 
+		}
+
 
 		public static MyCacheableObject mco = null;
 		public static void Main(string[] args)
@@ -72,15 +81,19 @@ namespace ConsoleApplication
 					//add to cache
 					MyCacheableObject mco = new MyCacheableObject(log);
 					cache.addEntry(id, mco);//hexid is key, log in mco is val
-				} else if(isAccess(log)){
+				} else if(isAccess(log) && hasKey(log)){
+					//Console.WriteLine("LOG:");
+					//Console.WriteLine(log);
 					accesses++;
-					int start = log.IndexOf("this=")+5;
-					int length = 13;
+					int start = log.IndexOf("key=predictor::") + 15;
+					int length = log.Length - start - 1;//no need for the ']'
 					try{
-						string hexid = log.Substring(start, length);
-
-						if(cache.getEntry(hexid.Trim()) != null){
-							hits++;//not in cache
+						string id = log.Substring(start, length);
+						//Console.WriteLine("ID:");
+						//Console.WriteLine(id);
+						//Console.WriteLine("\n");
+						if(cache.getEntry(id.Trim()) != null){
+							hits++;
 						}
 					} catch(ArgumentOutOfRangeException){
 						//Console.WriteLine("probably didnt have this= in it...");
