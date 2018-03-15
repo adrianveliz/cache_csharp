@@ -37,15 +37,24 @@ namespace Test
 
         public MyCacheableObject getEntry(string key)
         {
-            if (_cache.ContainsKey(key))
+            try
             {
-                MyCacheableObject mco = _cache[key].Target as MyCacheableObject;
-                GC.SuppressFinalize(mco);
-                GC.ReRegisterForFinalize(mco);
-                _lru.Remove(mco);
-                mco.setGet(true);
-                return mco;
+                if (_cache.ContainsKey(key))
+                {
+                    MyCacheableObject mco = _cache[key].Target as MyCacheableObject;
+                    GC.SuppressFinalize(mco);
+                    GC.ReRegisterForFinalize(mco);
+                    _lru.Remove(mco);
+                    mco.setGet(true);
+                    return mco;
+                }
             }
+            catch (System.ArgumentNullException e)
+            {
+                //problem is GC.SuppressFinalize(mco);, not accepting null objects
+                return null;
+            }
+
             return null;
         }
 

@@ -65,7 +65,7 @@ namespace Test
 		public static MyCacheableObject mco = null;
 		public static void Main(string[] args)
 		{
-			int size = Int32.MaxValue;
+			int size = 50;
 			int hits = 0;
 			int accesses = 0;
 			Cache cache = new FinalCache(size);
