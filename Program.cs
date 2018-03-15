@@ -68,7 +68,7 @@ namespace Test
 			int size = Int32.MaxValue;
 			int hits = 0;
 			int accesses = 0;
-			MyCache cache = new MyCache(size);
+			Cache cache = new FinalCache(size);
 			string log = null;
 			while((log = Console.ReadLine()) != null){
 				//need to get id of entries when they are created

@@ -9,7 +9,7 @@ namespace Test
 	public class MyCacheableObject
 	{
 		//WeakReference _cache = null;
-		MyCache _cache;
+		Cache _cache;
 		string _value;
 		bool _get = false;
 
@@ -38,7 +38,7 @@ namespace Test
 			return this.ToString().GetHashCode();
 		}
 
-		public void setCache(MyCache cache)
+		public void setCache(Cache cache)
 		{
 			//_cache = new WeakReference(cache);
 			_cache = cache;

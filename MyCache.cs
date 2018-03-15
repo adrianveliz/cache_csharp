@@ -6,7 +6,7 @@ using System.Collections.Specialized;
 
 namespace Test
 {
-public class MyCache
+	public class MyCache : Cache
 	{
 		// Dictionary to contain the cache.
 		Dictionary<String, MyCacheableObject> _cache;
