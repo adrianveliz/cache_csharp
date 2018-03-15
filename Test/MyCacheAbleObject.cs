@@ -54,29 +54,5 @@ namespace Test
 			this._get = gotten;
 		}
 
-		~MyCacheableObject()
-		{
-			//MyCache cache = _cache.Target as MyCache;
-			if (_cache != null)
-			{
-				//Console.WriteLine("Finalized: " + this._value);
-				if(this.gotten())//this object has been gotten, second chance before adding to LRU
-				{
-					this.setGet(false);
-				}
-				else
-				{
-					_cache.LRU(this);
-				}
-				//GC.SuppressFinalize(this);//I know this looks weird, trust me. Don't delete
-				GC.ReRegisterForFinalize(this);
-			}
-			else
-			{
-				//This call to suppress is not necessary since it was not reregistered
-				GC.SuppressFinalize(this);
-				//Console.WriteLine("Cache does not exist. Do not revive.");
-			}
-		}
 	}
 }

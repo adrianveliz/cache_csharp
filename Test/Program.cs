@@ -39,10 +39,6 @@ namespace Test
 			return false;
 		}
 
-		public static bool isDoom(string log){
-			return log.Contains("dooming entry");
-		}
-
 		/*
 		* works pretty well except for some exceptional circumstances.
 		* Example:
@@ -61,14 +57,20 @@ namespace Test
 			return log.Contains("key=predictor::http"); 
 		}
 
+		/*
+		* For FinalCache, returns true for logs in the following format:
+		2018-03-12 20:13:40.467981 UTC - [Main Thread]: D/cache2   dooming entry 7f714d24af00 for :https://stags.bluekai.com/site/13583?id=d9d70302-2631-11e8-a359-0242ac110005 because of OPEN_TRUNCATE
+		*/
+		public static bool isDoom(string log){
+			return log.Contains("dooming entry");
+		}
 
-		public static MyCacheableObject mco = null;
-		public static void Main(string[] args)
+		public static void lruTest()
 		{
 			int size = 50;
 			int hits = 0;
 			int accesses = 0;
-			Cache cache = new FinalCache(size);
+			MyCache cache = new MyCache(size);
 			string log = null;
 			while((log = Console.ReadLine()) != null){
 				//need to get id of entries when they are created
@@ -100,6 +102,56 @@ namespace Test
 					}
 				}
 			}
+			double hitrate = (double)hits / (double)accesses;
+			Console.WriteLine("Accesses " + accesses);
+			Console.WriteLine("Hits " + hits);
+		}
+
+		public static void Main(string[] args)
+		{
+			int size = 50;
+			int hits = 0;
+			int accesses = 0;
+			FinalCache cache = new FinalCache(size);
+			string log = null;
+			while((log = Console.ReadLine()) != null){
+				//need to get id of entries when they are created
+				//so i can 'get' them when accessed
+				if(isNewEntry(log)){
+					//testing getting the id of this new entry log
+					int start = log.IndexOf("entryKey=:") + 10;
+					int length = log.IndexOf(",") - start;
+					string id = log.Substring(start, length);//grabs the url id of the entry.
+					//add to cache
+					MyCacheableObject mco = new MyCacheableObject(log);
+					cache.addEntry(id, mco);//id is key, log in mco is val
+				} else if(isAccess(log) && hasKey(log)){
+					accesses++;
+					int start = log.IndexOf("key=predictor::") + 15;
+					int length = log.Length - start - 1;//no need for the ']'
+					try{
+						string id = log.Substring(start, length);
+						//Console.WriteLine("ID:");
+						//Console.WriteLine(id);
+						//Console.WriteLine("\n");
+						if(cache.getEntry(id.Trim()) != null){
+							hits++;
+						}
+					} catch(ArgumentOutOfRangeException){
+						//Console.WriteLine("probably didnt have this= in it...");
+					}
+				} else if(isDoom(log)){
+		/*2018-03-12 20:13:40.467981 UTC - [Main Thread]: D/cache2   dooming entry 7f714d24af00 for :https://stags.bluekai.com/site/13583?id=d9d70302-2631-11e8-a359-0242ac110005 because of OPEN_TRUNCATE
+*/
+					try{
+						int start = log.IndexOf("for") + 5;//chop of ':'
+						int length = log.IndexOf("because") - start; 
+						string id = log.Substring(start, length).Trim();
+						cache.update(id);
+					}catch(ArgumentOutOfRangeException){}
+				}
+			}
+
 			double hitrate = (double)hits / (double)accesses;
 			Console.WriteLine("Accesses " + accesses);
 			Console.WriteLine("Hits " + hits);

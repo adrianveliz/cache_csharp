@@ -1,0 +1,3 @@
+over intervals of accesses add recently doomed things
+
+after interval is over clear that intermediate set and add everything to finalcache

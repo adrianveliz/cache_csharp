@@ -9,6 +9,5 @@ namespace Test
         void addEntry(string key, MyCacheableObject val);
         MyCacheableObject getEntry(string key);
         //this dependency may need to be generalized or otherwise fixed.
-        void LRU(MyCacheableObject mco);
     }
 }

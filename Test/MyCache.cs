@@ -98,5 +98,4 @@ namespace Test
 			return _lru.Count;
 		}
 	}
-
 }	
