@@ -1,15 +1,23 @@
 import java.util.HashMap;
 import java.util.Map;
 
+
+
 public class FinalCache<K, V extends Cacheable> implements Cache{
     private Map<K, V> cache;
     private LruCache<K, V> doomed;
-    private int size;//of lru
+    private int doomedSize;//of lru
 
-    public FinalCache(int size){
-        this.size = size;
-        cache = new HashMap<>(size);
-        doomed = new LruCache<>(size);
+    public FinalCache(int doomedSize){
+        this.doomedSize = doomedSize;
+        cache = new HashMap<>(doomedSize);
+        doomed = new LruCache<>(doomedSize);
+    }
+
+    public void remove(K key){
+        if(key == null) return;
+        cache.remove(key);
+        doomed.remove(key);
     }
 
     public void add(K key, V val) {

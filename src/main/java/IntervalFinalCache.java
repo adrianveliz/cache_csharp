@@ -1,16 +1,15 @@
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 public class IntervalFinalCache<K, V extends Cacheable> implements Cache{
     private FinalCache<K, V> cache;
     private LruCache<K, V> interval;
-    private int size, intervalSize;
+    private int initialFinalCacheSize, intervalSize;
 
-    public IntervalFinalCache(int size, int intervalSize){
-        this.size = size;
-        cache = new FinalCache<>(size);
+    public IntervalFinalCache(int intervalSize){
+        this(10, intervalSize);
+    }
+
+    public IntervalFinalCache(int initialFinalCacheSize, int intervalSize){
+        this.initialFinalCacheSize = initialFinalCacheSize;
+        cache = new FinalCache<>(initialFinalCacheSize);
 
         this.intervalSize = intervalSize;
         interval = new LruCache<>(intervalSize);
@@ -41,5 +40,9 @@ public class IntervalFinalCache<K, V extends Cacheable> implements Cache{
             cache.add(key, interval.get(key));
         }
         interval.clear();
+    }
+
+    public void remove(K key){
+        cache.remove(key);
     }
 }
