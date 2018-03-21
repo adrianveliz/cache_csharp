@@ -22,6 +22,4 @@ public class LruTest {
     boolean isRemoved(String log){
         return log.contains("RemoveExactEntry");
     }
-
-
 }
