@@ -20,6 +20,10 @@ public class LruCache implements Cache {
         }
     }
 
+    public void remove(String key){
+        cache.remove(key);
+    }
+
     @Override
     public void add(String key, Cacheable val) {
         //there may need to be catch block here. original has it
