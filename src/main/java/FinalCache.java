@@ -1,30 +1,28 @@
 import java.util.HashMap;
 import java.util.Map;
 
-public class FinalCache implements Cache{
-    private Map<String, Cacheable> cache;
-    private LruCache doomed;
+public class FinalCache<K, V extends Cacheable> implements Cache{
+    private Map<K, V> cache;
+    private LruCache<K, V> doomed;
     private int size;//of lru
 
     public FinalCache(int size){
         this.size = size;
-        cache = new HashMap<>();
-        doomed = new LruCache(size);
+        cache = new HashMap<>(size);
+        doomed = new LruCache<>(size);
     }
 
-    @Override
-    public void add(String key, Cacheable val) {
+    public void add(K key, V val) {
         val.setCache(this);
         cache.put(key, val);//adding duplicates doesnt affect maps
     }
 
-    @Override
-    public Cacheable get(String key) {
+    public V get(K key) {
         if(cache.containsKey(key)){
             return cache.get(key);
         }
         if(doomed.get(key) != null){//doomed contains key
-            Cacheable c = doomed.get(key);
+            V c = doomed.get(key);
             //move from doomed to regular set
             doomed.remove(key);
             cache.put(key, c);
@@ -34,12 +32,12 @@ public class FinalCache implements Cache{
     }
 
     //to be called when entry is doomed
-    public void update(String key){
+    public void update(K key){
         if(cache.containsKey(key)){
             //move from cache to doomed set
-            Cacheable c = cache.get(key);
+            V c = cache.get(key);
             cache.remove(key);
-            doomed.add(key, c);
+            doomed.put(key, c);
         }
     }
 }
