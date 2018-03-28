@@ -5,11 +5,12 @@ import java.util.Scanner;
 public class LruTest {
 
     public static void main(String[] args) throws FileNotFoundException {
-        int size = 50;
+        int size = 7_000;
         int hits = 0;
         int accesses = 0;
 
         LruCache<String, String> cache = new LruCache<>(size);
+        FinalCache<String, Cacheable> fcache = new FinalCache<>(size);
 
         File fire_logs = new File("resources/fire_logs");
         for(File logFile : fire_logs.listFiles()){//all files in this directory
@@ -20,6 +21,7 @@ public class LruTest {
                 if(TestUtils.isNewEntry(log)){
                     String id = TestUtils.newEntryKey(log);
                     cache.put(id, log);
+                    fcache.add(id, new Cacheable(log));
                 }
                 else if(TestUtils.isAccess(log) && TestUtils.hasKey(log)){
                     accesses++;

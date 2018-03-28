@@ -14,6 +14,10 @@ public class FinalCache<K, V extends Cacheable> implements Cache{
         doomed = new LruCache<>(doomedSize);
     }
 
+    public int size(){
+        return cache.size();
+    }
+
     public void remove(K key){
         if(key == null) return;
         cache.remove(key);
