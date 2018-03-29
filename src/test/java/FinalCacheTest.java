@@ -7,17 +7,22 @@ public class FinalCacheTest {
     static String doomKey(String log){
         int start = log.indexOf("for") + 5;
         int end = log.indexOf("because");
-        return log.substring(start, end).trim();
+        try {
+            return log.substring(start, end).trim();
+        }catch(StringIndexOutOfBoundsException e){
+            return null;
+        }
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        int size = 9423;//final size of finalcache on current logs
+        int size = 500;//final size of finalcache on current logs
         int hits = 0;
         int removals = 0;
         int accesses = 0;
         int potential = 0;
         int fcacheRemovals = 0;
         int fcacheDoomed = 0;
+        int dooms = 0;
 
         FinalCache<String, Cacheable> cache = new FinalCache<>(size);
         LruCache<String, String> lcache = new LruCache<>(size);
@@ -42,7 +47,8 @@ public class FinalCacheTest {
                         potential++;
                     }
                 }
-                else if(TestUtils.isDoom(log) && TestUtils.hasKey(log)){
+                else if(TestUtils.isDoom(log)){
+                    dooms++;
                     String id = doomKey(log);
                     if(cache.get(id) != null){
                         fcacheDoomed++;
@@ -75,9 +81,9 @@ public class FinalCacheTest {
 
 //        System.out.println("size = " + cache.size());
         System.out.println("hits = " + hits);
-//        System.out.println("removals = " + removals);
         System.out.println("potential = " + potential);
         System.out.println("fcacheRemovals = " + fcacheRemovals);
         System.out.println("fcacheDoomed = " + fcacheDoomed);
+        System.out.println("dooms = " + dooms);
     }
 }
