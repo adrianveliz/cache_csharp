@@ -15,7 +15,7 @@ public class FinalCacheTest {
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        int size = 500;//final size of finalcache on current logs
+        int size = 50;
         int hits = 0;
         int removals = 0;
         int accesses = 0;
@@ -24,7 +24,9 @@ public class FinalCacheTest {
         int fcacheDoomed = 0;
         int dooms = 0;
 
-        FinalCache<String, Cacheable> cache = new FinalCache<>(size);
+        int maxSize = 0;
+
+        FinalCache<String, Cacheable> cache = new FinalCache<>(1000);
         LruCache<String, String> lcache = new LruCache<>(size);
         //when an entry is removed remove it from cache
 
@@ -38,6 +40,7 @@ public class FinalCacheTest {
                 if(TestUtils.isNewEntry(log)){
                     String id = TestUtils.newEntryKey(log);
                     cache.add(id, new Cacheable(log));
+                    maxSize = cache.size() > maxSize ? cache.size() : maxSize;
 
                     lcache.put(id, log);
 
@@ -58,7 +61,7 @@ public class FinalCacheTest {
                 else if(TestUtils.isAccess(log) && TestUtils.hasKey(log)){
                     accesses++;
                     String id = TestUtils.accessKey(log);
-                    if(cache.get(id.trim()) != null){
+                    if(lcache.get(id.trim()) != null){
                         hits++;
                     }
                 }
@@ -82,8 +85,9 @@ public class FinalCacheTest {
 //        System.out.println("size = " + cache.size());
         System.out.println("hits = " + hits);
         System.out.println("potential = " + potential);
-        System.out.println("fcacheRemovals = " + fcacheRemovals);
-        System.out.println("fcacheDoomed = " + fcacheDoomed);
+        System.out.println("maxSize = " + maxSize);
+//        System.out.println("fcacheRemovals = " + fcacheRemovals);
+//        System.out.println("fcacheDoomed = " + fcacheDoomed);
         System.out.println("dooms = " + dooms);
     }
 }

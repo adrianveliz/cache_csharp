@@ -52,4 +52,12 @@ public class FinalCache<K, V extends Cacheable> implements Cache{
             doomed.put(key, c);
         }
     }
+
+    public int getDoomedSetAmountDoomed(){
+        return doomed.getAmountDoomed();
+    }
+
+    public void resetDoomedSetAmountDoomed(){
+        doomed.resetAmountDoomed();
+    }
 }

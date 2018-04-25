@@ -36,13 +36,23 @@ public class IntervalFinalCache<K, V extends Cacheable> implements Cache{
     //the interval, whatever it is (time, accesses etc) is
     //meant to be handled outside of this class.
     public void dumpInterval(){
-        for (K key : interval.keySet()) {
-            cache.add(key, interval.get(key));
-        }
+//        for (K key : interval.keySet()) {
+//            cache.add(key, interval.get(key));
+//        }
+//        interval.clear();
+        interval.forEach((K, V) -> cache.add(K, V));
         interval.clear();
     }
 
     public void remove(K key){
         cache.remove(key);
+    }
+
+    public int getDoomedSetAmountDoomed(){
+        return cache.getDoomedSetAmountDoomed();
+    }
+
+    public void resetDoomedSetAmountDoomed(){
+        cache.resetDoomedSetAmountDoomed();
     }
 }
