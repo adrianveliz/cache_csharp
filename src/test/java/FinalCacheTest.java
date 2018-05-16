@@ -40,8 +40,7 @@ public class FinalCacheTest {
 
             @Override
             public String toString() {
-                String val = "gets: " + gets + " addedAt: " + addedAt + " removed: " + removed + " removedAt: " + removedAt;
-                return val;
+                return String.format("gets: %d addedAt: %d removed: %s removedAt: %d", gets, addedAt, removed, removedAt);
             }
         }
 
@@ -50,6 +49,7 @@ public class FinalCacheTest {
         FinalCache<String, String> cache = new FinalCache<>(100);
         LruCache<String, String> lcache = new LruCache<>(10_000);
         //when an entry is removed remove it from cache
+//        System.setOut(new PrintStream(new File("trackerstatus.txt")));
 
         File fire_logs = new File("resources/fire_logs");
         for(File logFile : fire_logs.listFiles()){//all files in this directory
@@ -61,13 +61,10 @@ public class FinalCacheTest {
                     accesses++;
                     String id = TestUtils.newEntryKey(log);
 
-//                    Tracker tracker = new Tracker();
-//                    tracker.addedAt = accesses;
                     trackingMap.put(id.trim(), new Tracker(accesses));
-
                     cache.add(id.trim(), log);
 
-                    maxSize = cache.size() > maxSize ? cache.size() : maxSize;
+                    maxSize = Math.max(maxSize, cache.size());
 
                     lcache.put(id, log);
 
@@ -91,12 +88,13 @@ public class FinalCacheTest {
                     if(lcache.get(id.trim()) != null){
                         hits++;
                     }
-                    String entry = cache.get(id.trim());
-                    if(entry != null){
+                    if(cache.containsKey(id.trim())){
                         fcacheHits++;
+//                        System.out.println(id);
 
-                        if(trackingMap.get(entry) != null){
-                            trackingMap.get(entry).gets++;
+                        if(trackingMap.containsKey(id.trim())){
+                            trackingMap.get(id.trim()).gets++;
+//                            System.out.println(id);
                         }
                     }
                 }
@@ -104,6 +102,8 @@ public class FinalCacheTest {
                     //remove from finalcache
                     String id = TestUtils.removalKey(log);
                     if(cache.get(id) != null){
+                        id = id.trim();
+
                         fcacheRemovals++;
                         trackingMap.get(id).removed = true;
                         trackingMap.get(id).removedAt = accesses;
@@ -120,18 +120,22 @@ public class FinalCacheTest {
 //        System.out.println("hits = " + hits);
 //        System.out.println("fcacheHits = " + fcacheHits);
 //        System.setOut(new PrintStream(new File("histogramRaw.txt")));
-
-//        for(String key : trackingMap.keySet()){
+//
+        int totalGets = 0;
+        for(String key : trackingMap.keySet()){
 //            System.out.println(trackingMap.get(key));
-//        }
+            totalGets += trackingMap.get(key).gets;
+        }
+        System.out.println("Tracker gets " + totalGets);
+
 
 //        System.out.println("size = " + cache.size());
 //        System.out.println("hits = " + hits);
 //        System.out.println("potential = " + potential);
 //        System.out.println("maxSize = " + maxSize);
-        System.out.println("removals = " + removals);
-        System.out.println("fcacheRemovals = " + fcacheRemovals);
-        System.out.println("fcacheDoomed = " + fcacheDoomed);
+//        System.out.println("removals = " + removals);
+//        System.out.println("fcacheRemovals = " + fcacheRemovals);
+//        System.out.println("fcacheDoomed = " + fcacheDoomed);
 //        System.out.println("dooms = " + dooms);
     }
 }

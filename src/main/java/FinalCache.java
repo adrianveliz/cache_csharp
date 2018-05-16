@@ -32,7 +32,7 @@ public class FinalCache<K, V> implements Cache{
         if(cache.containsKey(key)){
             return cache.get(key);
         }
-        if(doomed.get(key) != null){//doomed contains key
+        if(doomed.containsKey(key)){//doomed contains key
             V c = doomed.get(key);
             //move from doomed to regular set
             doomed.remove(key);
@@ -40,6 +40,10 @@ public class FinalCache<K, V> implements Cache{
             return c;
         }
         return null;
+    }
+
+    public boolean containsKey(K key){
+        return cache.containsKey(key) || doomed.containsKey(key);
     }
 
     //to be called when entry is doomed
