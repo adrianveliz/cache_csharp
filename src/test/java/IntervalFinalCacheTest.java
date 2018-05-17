@@ -38,7 +38,7 @@ public class IntervalFinalCacheTest {
                 }
                 else if(TestUtils.isDoom(log)){
                     dooms++;
-                    String id = FinalCacheTest.doomKey(log);
+                    String id = TestUtils.doomKey(log);
                     if(id != null)
                         cache.addToInterval(id, new Cacheable(log));
                     intervalDooms++;

@@ -55,4 +55,13 @@ public class TestUtils {
         }
     }
 
+    static String doomKey(String log){
+        int start = log.indexOf("for") + 5;
+        int end = log.indexOf("because");
+        try {
+            return log.substring(start, end).trim();
+        }catch(StringIndexOutOfBoundsException e){
+            return null;
+        }
+    }
 }

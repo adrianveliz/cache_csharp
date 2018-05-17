@@ -1,4 +1,4 @@
-public class IntervalFinalCache<K, V extends Cacheable> implements Cache{
+public class IntervalFinalCache<K, V> {
     private FinalCache<K, V> cache;
     private LruCache<K, V> interval;
     private int initialFinalCacheSize, intervalSize;
@@ -16,11 +16,10 @@ public class IntervalFinalCache<K, V extends Cacheable> implements Cache{
     }
 
     public void add(K key, V val) {
-        val.setCache(this);
         cache.add(key, val);
     }
 
-    public Cacheable get(K key) {
+    public V get(K key) {
         //null if nothing
         return cache.get(key);
     }
@@ -36,10 +35,6 @@ public class IntervalFinalCache<K, V extends Cacheable> implements Cache{
     //the interval, whatever it is (time, accesses etc) is
     //meant to be handled outside of this class.
     public void dumpInterval(){
-//        for (K key : interval.keySet()) {
-//            cache.add(key, interval.get(key));
-//        }
-//        interval.clear();
         interval.forEach((K, V) -> cache.add(K, V));
         interval.clear();
     }

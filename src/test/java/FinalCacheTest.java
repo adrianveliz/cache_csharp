@@ -1,22 +1,56 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Scanner;
-import java.util.Set;
 
 public class FinalCacheTest {
 
-    static String doomKey(String log){
-        int start = log.indexOf("for") + 5;
-        int end = log.indexOf("because");
-        try {
-            return log.substring(start, end).trim();
-        }catch(StringIndexOutOfBoundsException e){
-            return null;
+    static class Tracker{
+        int gets;
+        int addedAt;
+        int removedAt;
+        boolean removed;
+        Tracker(int addedAt){this.addedAt = addedAt;}
+
+        @Override
+        public String toString() {
+            return String.format("gets: %d addedAt: %d removed: %s removedAt: %d", gets, addedAt, removed, removedAt);
         }
     }
+
+    static void iterateLogs(File logDir) throws FileNotFoundException {
+        for(File logFile : Objects.requireNonNull(logDir.listFiles())){
+            Scanner in = new Scanner(logFile);
+            for(String log = null; in.hasNextLine(); log = in.nextLine()){
+                if(log == null) continue;
+                if(TestUtils.isNewEntry(log)){
+                    newEntryHandler();
+                }
+                else if(TestUtils.isDoom(log)){
+                    doomHandler();
+                }
+                else if(TestUtils.isAccess(log) && TestUtils.hasKey(log)){
+                    accessHandler();
+                }
+                else if(TestUtils.isRemoval(log)){
+                    removalHandler();
+                }
+                in.close();
+            }
+        }
+    }
+
+    static void newEntryHandler(){
+
+    }
+
+    static void doomHandler(){}
+
+    static void accessHandler(){}
+
+    static void removalHandler(){}
 
     public static void main(String[] args) throws FileNotFoundException {
         int size = 50;
@@ -30,20 +64,6 @@ public class FinalCacheTest {
         int fcacheHits = 0;
 
         int maxSize = 0;
-
-        class Tracker{
-            int gets;
-            int addedAt;
-            int removedAt;
-            boolean removed;
-            Tracker(int addedAt){this.addedAt = addedAt;}
-
-            @Override
-            public String toString() {
-                return String.format("gets: %d addedAt: %d removed: %s removedAt: %d", gets, addedAt, removed, removedAt);
-            }
-        }
-
         Map<String, Tracker> trackingMap = new HashMap<>();
 
         FinalCache<String, String> cache = new FinalCache<>(100);
@@ -76,7 +96,7 @@ public class FinalCacheTest {
                 }
                 else if(TestUtils.isDoom(log)){
                     dooms++;
-                    String id = doomKey(log);
+                    String id = TestUtils.doomKey(log);
                     if(cache.get(id) != null){
                         fcacheDoomed++;
                     }
@@ -127,7 +147,6 @@ public class FinalCacheTest {
             totalGets += trackingMap.get(key).gets;
         }
         System.out.println("Tracker gets " + totalGets);
-
 
 //        System.out.println("size = " + cache.size());
 //        System.out.println("hits = " + hits);

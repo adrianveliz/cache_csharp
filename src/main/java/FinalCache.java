@@ -2,7 +2,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class FinalCache<K, V> implements Cache{
+public class FinalCache<K, V> {
     private Map<K, V> cache;
     private LruCache<K, V> doomed;
     private int doomedSize;//of lru
@@ -24,7 +24,6 @@ public class FinalCache<K, V> implements Cache{
     }
 
     public void add(K key, V val) {
-//        val.setCache(this);
         cache.put(key, val);//adding duplicates doesnt affect maps
     }
 

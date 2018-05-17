@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class LruCache<K, V> extends LinkedHashMap<K, V> implements Cache{
+public class LruCache<K, V> extends LinkedHashMap<K, V> {
     private int size;
     private K recentEviction;
     private int amountDoomed;
