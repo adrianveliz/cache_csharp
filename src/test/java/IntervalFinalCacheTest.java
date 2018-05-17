@@ -16,7 +16,7 @@ public class IntervalFinalCacheTest {
 
         int dooms = 0;
 
-        IntervalFinalCache<String, Cacheable> cache = new IntervalFinalCache<>(50, intervalSize);
+        IntervalFinalCache<String, String> cache = new IntervalFinalCache<>(50, intervalSize);
         //when an entry is removed remove it from cache
         int intervalNum = 1;
 
@@ -34,13 +34,13 @@ public class IntervalFinalCacheTest {
                     interval--;
 
                     String id = TestUtils.newEntryKey(log);
-                    cache.add(id, new Cacheable(log));
+                    cache.add(id, log);
                 }
                 else if(TestUtils.isDoom(log)){
                     dooms++;
                     String id = TestUtils.doomKey(log);
                     if(id != null)
-                        cache.addToInterval(id, new Cacheable(log));
+                        cache.addToInterval(id, log);
                     intervalDooms++;
 
                     //reset interval variables

@@ -64,7 +64,6 @@ public class FinalCacheTest {
         int fcacheHits = 0;
 
         int maxSize = 0;
-        Map<String, Tracker> trackingMap = new HashMap<>();
 
         FinalCache<String, String> cache = new FinalCache<>(100);
         LruCache<String, String> lcache = new LruCache<>(10_000);
@@ -81,7 +80,6 @@ public class FinalCacheTest {
                     accesses++;
                     String id = TestUtils.newEntryKey(log);
 
-                    trackingMap.put(id.trim(), new Tracker(accesses));
                     cache.add(id.trim(), log);
 
                     maxSize = Math.max(maxSize, cache.size());
@@ -103,19 +101,13 @@ public class FinalCacheTest {
                     cache.update(id);
                 }
                 else if(TestUtils.isAccess(log) && TestUtils.hasKey(log)){
-                    accesses++;
                     String id = TestUtils.accessKey(log);
+                    accesses++;
                     if(lcache.get(id.trim()) != null){
                         hits++;
                     }
-                    if(cache.containsKey(id.trim())){
+                    if(cache.get(id.trim()) != null){
                         fcacheHits++;
-//                        System.out.println(id);
-
-                        if(trackingMap.containsKey(id.trim())){
-                            trackingMap.get(id.trim()).gets++;
-//                            System.out.println(id);
-                        }
                     }
                 }
                 else if(TestUtils.isRemoval(log)){
@@ -125,8 +117,6 @@ public class FinalCacheTest {
                         id = id.trim();
 
                         fcacheRemovals++;
-                        trackingMap.get(id).removed = true;
-                        trackingMap.get(id).removedAt = accesses;
                     }
                     cache.remove(id);
                     removals++;
@@ -138,22 +128,23 @@ public class FinalCacheTest {
 
 //        System.out.println("actual duplication: " + (fcacheHits - hits));
 //        System.out.println("hits = " + hits);
-//        System.out.println("fcacheHits = " + fcacheHits);
+        System.out.println("fcacheHits = " + fcacheHits);
 //        System.setOut(new PrintStream(new File("histogramRaw.txt")));
 //
-        int totalGets = 0;
-        for(String key : trackingMap.keySet()){
+//        int totalGets = 0;
+//        for(String key : cache.trackingMap.keySet()){
 //            System.out.println(trackingMap.get(key));
-            totalGets += trackingMap.get(key).gets;
-        }
-        System.out.println("Tracker gets " + totalGets);
+//            totalGets += cache.trackingMap.get(key).gets;
+//        }
+//        System.out.println("Tracker gets " + totalGets);
+        System.out.println(cache.i);
 
 //        System.out.println("size = " + cache.size());
 //        System.out.println("hits = " + hits);
 //        System.out.println("potential = " + potential);
 //        System.out.println("maxSize = " + maxSize);
 //        System.out.println("removals = " + removals);
-//        System.out.println("fcacheRemovals = " + fcacheRemovals);
+        System.out.println("fcacheRemovals = " + fcacheRemovals);
 //        System.out.println("fcacheDoomed = " + fcacheDoomed);
 //        System.out.println("dooms = " + dooms);
     }
