@@ -8,11 +8,8 @@ public class FinalCache<K, V> {
     private LruCache<K, V> doomed;
     private int doomedSize;//of lru
 
-
-    int i = 0;
-
     /**
-     * for the | Histogram |
+     * for the Histogram
      */
     static class Tracker{
         int gets;
@@ -58,24 +55,30 @@ public class FinalCache<K, V> {
         cache.put(key, val);//adding duplicates doesnt affect maps
 
         //TODO added at...
-        trackingMap.put(key, new Tracker());
+        if(!trackingMap.containsKey(key)){
+            trackingMap.put(key, new Tracker());
+        }
+    }
+
+    public void add(K key, V val, int addedAt){
+        cache.put(key, val);
+        if(!trackingMap.containsKey(key)){
+            trackingMap.put(key, new Tracker(addedAt));
+        }
     }
 
     public V get(K key) {
         if(key == null) return null;
         if(cache.containsKey(key)){
             trackingMap.get(key).gets++;
-
-            i++;
             return cache.get(key);
         }
-        if(doomed.containsKey(key)){//doomed contains key
+        else if(doomed.containsKey(key)){//doomed contains key
             V c = doomed.get(key);
             //move from doomed to regular set
             doomed.remove(key);
             cache.put(key, c);
 
-            i++;
             trackingMap.get(key).gets++;
             return c;
         }
@@ -102,5 +105,9 @@ public class FinalCache<K, V> {
 
     public void resetDoomedSetAmountDoomed(){
         doomed.resetAmountDoomed();
+    }
+
+    public K getRecentEvection(){
+        return doomed.getRecentEviction();
     }
 }
