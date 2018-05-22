@@ -5,6 +5,7 @@ import java.util.Scanner;
 public class LruTest {
 
     public static void main(String[] args) throws FileNotFoundException {
+        /*
         int size = 7_000;
         int hits = 0;
         int accesses = 0;
@@ -36,7 +37,6 @@ public class LruTest {
 
         System.out.println("accesses = " + accesses);
         System.out.println("hits = " + hits);
+    */
     }
-
-
 }

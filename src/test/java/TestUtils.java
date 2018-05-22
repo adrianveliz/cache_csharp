@@ -73,7 +73,10 @@ public class TestUtils {
     }
 
     void iterateLogs() throws FileNotFoundException {
-        for(File logFile : Objects.requireNonNull(logDir.listFiles())){
+        if(logDir == null || logDir.listFiles() == null){
+            throw new FileNotFoundException("Problem with files in " + logDir);
+        }
+        for(File logFile : logDir.listFiles()){
             Scanner in = new Scanner(logFile);
             for(String log = null; in.hasNextLine(); log = in.nextLine()){
                 if(log == null) continue;
@@ -81,16 +84,22 @@ public class TestUtils {
                     newEntryHandler(newEntryKey(log).trim());
                 }
                 else if(isDoom(log)){
-                    doomHandler(doomKey(log).trim());
+                    String doomKey = doomKey(log);
+                    if (doomKey != null) {
+                        doomHandler(doomKey.trim());
+                    }
                 }
                 else if(isAccess(log) && hasKey(log)){
                     accessHandler(accessKey(log).trim());
                 }
                 else if(isRemoval(log)){
-                    removalHandler(removalKey(log).trim());
+                    String removalKey = removalKey(log);
+                    if(removalKey != null){
+                        doomHandler(removalKey.trim());
+                    }
                 }
-                in.close();
             }
+            in.close();
         }
     }
 

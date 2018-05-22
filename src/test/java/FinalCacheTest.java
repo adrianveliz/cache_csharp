@@ -23,6 +23,7 @@ public class FinalCacheTest {
 
 
     public static void main(String[] args) throws FileNotFoundException {
+        /*
         int size = 50;
         int hits = 0;
         int removals = 0;
@@ -121,6 +122,7 @@ public class FinalCacheTest {
             }
             in.close();
         }
+        */
 
 //        System.out.println("actual duplication: " + (fcacheHits - hits));
 //        System.out.println("hits = " + hits);

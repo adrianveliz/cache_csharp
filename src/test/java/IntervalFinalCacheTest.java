@@ -3,7 +3,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.Scanner;
 
-public class IntervalFinalCacheTest {
+public class IntervalFinalCacheTest extends TestUtils{
     public static void main(String[] args) throws FileNotFoundException {
         int intervalSize = 0;
         int hits = 0;
@@ -21,6 +21,7 @@ public class IntervalFinalCacheTest {
         int intervalNum = 1;
 
 
+        /*
         File fire_logs = new File("resources/fire_logs");
         int interval = 500;//interval of accesses
         System.setOut(new PrintStream(new File("results" + interval + ".txt")));
@@ -30,10 +31,10 @@ public class IntervalFinalCacheTest {
             //iterate over each log in each file
             for(String log = null; in.hasNextLine(); log = in.nextLine()){
                 if(log == null) continue;
-                if(TestUtils.isNewEntry(log)){
+                if(isNewEntry(log)){
                     interval--;
 
-                    String id = TestUtils.newEntryKey(log);
+                    String id = newEntryKey(log);
                     cache.add(id, log);
                 }
                 else if(TestUtils.isDoom(log)){
@@ -78,5 +79,6 @@ public class IntervalFinalCacheTest {
 //        System.out.println("accesses = " + accesses);
         System.out.println("hits = " + hits);
         System.out.println("dooms = " + dooms);
+        */
     }
 }
