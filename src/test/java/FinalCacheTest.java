@@ -21,37 +21,6 @@ public class FinalCacheTest {
         }
     }
 
-    static void iterateLogs(File logDir) throws FileNotFoundException {
-        for(File logFile : Objects.requireNonNull(logDir.listFiles())){
-            Scanner in = new Scanner(logFile);
-            for(String log = null; in.hasNextLine(); log = in.nextLine()){
-                if(log == null) continue;
-                if(TestUtils.isNewEntry(log)){
-                    newEntryHandler();
-                }
-                else if(TestUtils.isDoom(log)){
-                    doomHandler();
-                }
-                else if(TestUtils.isAccess(log) && TestUtils.hasKey(log)){
-                    accessHandler();
-                }
-                else if(TestUtils.isRemoval(log)){
-                    removalHandler();
-                }
-                in.close();
-            }
-        }
-    }
-
-    static void newEntryHandler(){
-
-    }
-
-    static void doomHandler(){}
-
-    static void accessHandler(){}
-
-    static void removalHandler(){}
 
     public static void main(String[] args) throws FileNotFoundException {
         int size = 50;
