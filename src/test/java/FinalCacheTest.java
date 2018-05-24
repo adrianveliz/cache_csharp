@@ -8,20 +8,6 @@ import java.util.Scanner;
 
 public class FinalCacheTest {
 
-    static class Tracker{
-        int gets;
-        int addedAt;
-        int removedAt;
-        boolean removed;
-        Tracker(int addedAt){this.addedAt = addedAt;}
-
-        @Override
-        public String toString() {
-            return String.format("gets: %d addedAt: %d removed: %s removedAt: %d", gets, addedAt, removed, removedAt);
-        }
-    }
-
-
     public static void main(String[] args) throws FileNotFoundException {
         /*
         int size = 50;
