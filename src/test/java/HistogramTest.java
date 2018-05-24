@@ -10,7 +10,7 @@ import java.util.Map;
  * Purpose:
  */
 public class HistogramTest extends TestUtils{
-    FinalCache<String, String> cache = new FinalCache<>(100);
+    FinalCache<String, String> cache = new FinalCache<>(0);
     Map<String, Tracker> trackerMap = new HashMap<>();
 
     //intervals of accesses

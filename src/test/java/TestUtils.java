@@ -95,7 +95,7 @@ public class TestUtils {
                 else if(isRemoval(log)){
                     String removalKey = removalKey(log);
                     if(removalKey != null){
-                        doomHandler(removalKey.trim());
+                        removalHandler(removalKey.trim());
                     }
                 }
             }
