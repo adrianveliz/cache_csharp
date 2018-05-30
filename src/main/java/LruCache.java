@@ -5,6 +5,17 @@ public class LruCache<K, V> extends LinkedHashMap<K, V> {
     private K recentEviction;
     private int amountDoomed;
 
+    /**
+     * An interface for being alerted when an entry is evicted from this cache
+     * passes in the entry evicted
+     */
+    interface OnEntryEvictedListener{
+        void onEntryEvicted(String key, String val);
+    }
+
+    //a list of listeners to be notified when an entry is evicted
+    private List<OnEntryEvictedListener> listeners;
+
     public LruCache(int size) {
         //size
         //load factor
@@ -12,6 +23,13 @@ public class LruCache<K, V> extends LinkedHashMap<K, V> {
         super(size, .75f, true);
         this.size = size;
         recentEviction = null;
+
+        //size 10 why not?
+        listeners = new ArrayList<>(10);
+    }
+
+    public void addOnEntryEvictedListener(OnEntryEvictedListener listener){
+        listeners.add(listener);
     }
 
     //called for maintenance
@@ -23,6 +41,10 @@ public class LruCache<K, V> extends LinkedHashMap<K, V> {
         if (size() > size) {
             this.amountDoomed++;
             recentEviction = eldest.getKey();
+            //notify listeners
+            listeners.forEach(listener -> {
+                listener.onEntryEvicted(eldest.getKey().toString(), eldest.getValue().toString());
+            });
             return true;
         }
         return false;
