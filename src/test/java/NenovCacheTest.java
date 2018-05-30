@@ -15,24 +15,23 @@ public class NenovCacheTest extends TestUtils{
 
     @Override
     void newEntryHandler(String entry) {
-        cache.add(entry, null);
+        cache.add(entry);
     }
 
     @Override
     void accessHandler(String entry) {
-        if(cache.containsKey(entry)){
-            hits++;
-        }
+        cache.get(entry);
+        if(cache.containsKey(entry)) hits++;
     }
 
     @Override
     void doomHandler(String entry) {
-        cache.removeFromFinalCache(entry);
+        cache.update(entry);
     }
 
     @Override
     void removalHandler(String entry) {
-        cache.removeFromFinalCache(entry);
+        cache.remove(entry);
     }
 
     public static void main(String[] args) throws FileNotFoundException {
@@ -41,6 +40,9 @@ public class NenovCacheTest extends TestUtils{
             System.out.println("Starting test of size: " + (i * 1000));
             n = new NenovCacheTest(i * 1000);
             n.iterateLogs();
+            System.out.println("hits: " + n.hits);
+            System.out.println("size: " + n.cache.size());
+            System.out.println();
         }
     }
 }
