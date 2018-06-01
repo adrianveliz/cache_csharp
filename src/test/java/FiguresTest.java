@@ -1,13 +1,23 @@
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintStream;
+import java.util.HashSet;
 
 public class FiguresTest extends TestUtils{
-    int newEntries;
+    int additions;
     int removals;
     int dooms;
 
+    /**
+     * Holds the unique keys associated with each addition
+     */
+    HashSet<String> keys = new HashSet<>();
+
     @Override
     void newEntryHandler(String entry) {
-        newEntries++;
+        additions++;
+        keys.add(entry);
+//        System.out.println(entry);
     }
 
     @Override
@@ -20,11 +30,13 @@ public class FiguresTest extends TestUtils{
         dooms++;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         FiguresTest test = new FiguresTest();
+//        System.setOut(new PrintStream(new File("addKeys.txt")));
         try {
             test.iterateLogs();
-            System.out.println("test.newEntries = " + test.newEntries);
+            System.out.println("test.additions = " + test.additions);
+            System.out.println("unique additions = " + test.keys.size());
             System.out.println("test.dooms = " + test.dooms);
             System.out.println("test.removals = " + test.removals);
         } catch (FileNotFoundException e) {

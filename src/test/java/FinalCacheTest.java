@@ -6,12 +6,60 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
 
-public class FinalCacheTest {
+public class FinalCacheTest extends TestUtils{
+    FinalCache<String, String> cache;
+    int hits;
+    int maxSize = Integer.MIN_VALUE;
+    FinalCacheTest(int size){
+        cache = new FinalCache<>(size);
+    }
+
+    @Override
+    void newEntryHandler(String entry) {
+        //no need to have value, just
+        //keeping track of keys
+        //adding this as val to not
+        //break check for lruhits
+        cache.add(entry, entry);
+        maxSize = Math.max(maxSize, cache.size());
+    }
+
+    @Override
+    void accessHandler(String entry) {
+        if(cache.get(entry) != null) hits++;
+        maxSize = Math.max(maxSize, cache.size());
+    }
+
+    @Override
+    void doomHandler(String entry) {
+        cache.update(entry);
+        maxSize = Math.max(maxSize, cache.size());
+    }
+
+    @Override
+    void removalHandler(String entry) {
+        cache.remove(entry);
+        maxSize = Math.max(maxSize, cache.size());
+    }
+
 
     public static void main(String[] args) throws FileNotFoundException {
+        FinalCacheTest t;
+        int[] nums =
+                {0, 50, 100, 250, 500, 1000 /*, 1200,
+                        2000, 3000, 4000, 5000, 6000, 7000,
+                        8000, 9000, 10_000*/};
+        for(int size : nums){
+            t = new FinalCacheTest(size);
+            System.out.println("Starting test of size " + size);
+            t.iterateLogs();
+            System.out.println("t.maxSize = " + t.maxSize);
+            System.out.println("t.lruhits = " + t.hits);
+        }
+
         /*
         int size = 50;
-        int hits = 0;
+        int lruhits = 0;
         int removals = 0;
         int accesses = 0, intervalSize = 100;
         int potential = 0;
@@ -84,7 +132,7 @@ public class FinalCacheTest {
 
                     String id = TestUtils.accessKey(log);
                     if(lcache.get(id.trim()) != null){
-                        hits++;
+                        lruhits++;
                     }
                     if(cache.get(id.trim()) != null){
                         fcacheHits++;
@@ -110,8 +158,8 @@ public class FinalCacheTest {
         }
         */
 
-//        System.out.println("actual duplication: " + (fcacheHits - hits));
-//        System.out.println("hits = " + hits);
+//        System.out.println("actual duplication: " + (fcacheHits - lruhits));
+//        System.out.println("lruhits = " + lruhits);
 //        System.out.println("fcacheHits = " + fcacheHits);
 //        System.setOut(new PrintStream(new File("histogramRaw.txt")));
 
@@ -128,7 +176,7 @@ public class FinalCacheTest {
 //        System.out.println(cache.i);
 
 //        System.out.println("size = " + cache.size());
-//        System.out.println("hits = " + hits);
+//        System.out.println("lruhits = " + lruhits);
 //        System.out.println("potential = " + potential);
 //        System.out.println("maxSize = " + maxSize);
 //        System.out.println("removals = " + removals);
@@ -136,4 +184,5 @@ public class FinalCacheTest {
 //        System.out.println("fcacheDoomed = " + fcacheDoomed);
 //        System.out.println("dooms = " + dooms);
     }
+
 }

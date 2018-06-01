@@ -24,6 +24,7 @@ public class TestUtils {
     }
 
     boolean isNewEntry(String log){
+        if(log.contains("entryKey=~")) return false;
         return log.contains("CacheStorageService::AddStorageEntry");
     }
 
