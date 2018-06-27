@@ -8,6 +8,8 @@ public class FiguresTest extends TestUtils{
     int removals;
     int dooms;
 
+    int accesses;
+
     /**
      * Holds the unique keys associated with each addition
      */
@@ -30,15 +32,21 @@ public class FiguresTest extends TestUtils{
         dooms++;
     }
 
+    @Override
+    void accessHandler(String entry) {
+        accesses++;
+    }
+
     public static void main(String[] args) throws FileNotFoundException {
         FiguresTest test = new FiguresTest();
 //        System.setOut(new PrintStream(new File("addKeys.txt")));
         try {
             test.iterateLogs();
-            System.out.println("test.additions = " + test.additions);
-            System.out.println("unique additions = " + test.keys.size());
-            System.out.println("test.dooms = " + test.dooms);
-            System.out.println("test.removals = " + test.removals);
+//            System.out.println("test.additions = " + test.additions);
+//            System.out.println("unique additions = " + test.keys.size());
+//            System.out.println("test.dooms = " + test.dooms);
+//            System.out.println("test.removals = " + test.removals);
+            System.out.println("test.accesses = " + test.accesses);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

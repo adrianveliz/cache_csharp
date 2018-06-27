@@ -1,19 +1,29 @@
 import java.io.FileNotFoundException;
 
+/** TODO, Collect
+ *  Regular additions,
+ *  Adds because of misses,
+ *  Num of Evictions (regular as well)
+ */
+
 public class AddOnMissLruTest extends TestUtils{
     LruCache<String, String> cache;
     LruCache<String, String> addOnMissCache;
     int lruHits, addOnMissHits;
+    int adds, addsOnMiss;
+    int evictions;//evictions from addOnMissCache
 
     AddOnMissLruTest(int size){
         cache = new LruCache<>(size);
         addOnMissCache = new LruCache<>(size);
+        addOnMissCache.addOnEntryEvictedListener((key, val) -> evictions++);
     }
 
     @Override
     void newEntryHandler(String entry) {
         cache.put(entry, entry);
         addOnMissCache.put(entry, entry);
+        adds++;
     }
 
     @Override
@@ -27,6 +37,7 @@ public class AddOnMissLruTest extends TestUtils{
         else {
             //add on miss
             addOnMissCache.put(entry, entry);
+            addsOnMiss++;
         }
     }
 
@@ -40,8 +51,10 @@ public class AddOnMissLruTest extends TestUtils{
             test = new AddOnMissLruTest(size);
             test.iterateLogs();
             System.out.println("test of size " + size);
-            System.out.println("test.lruHits = " + test.lruHits);
             System.out.println("test.addOnMissHits = " + test.addOnMissHits);
+            System.out.println("test.addsOnMiss = " + test.addsOnMiss);
+            System.out.println("test.adds = " + test.adds);
+            System.out.println("test.evictions = " + test.evictions);
             System.out.println();
         }
 
