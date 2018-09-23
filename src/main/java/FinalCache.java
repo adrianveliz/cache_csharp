@@ -32,7 +32,6 @@ public class FinalCache<K, V> {
         this.doomedSize = doomedSize;
         cache = new HashMap<>(doomedSize);
         doomed = new LruCache<>(doomedSize);
-
         trackingMap = new HashMap<>();
     }
 
@@ -45,14 +44,14 @@ public class FinalCache<K, V> {
         cache.remove(key);
         doomed.remove(key);
 
-        //TODO added at...
+        //TODO removed at...
         if(trackingMap.containsKey(key)){
             trackingMap.get(key).removed = true;
         }
     }
 
     public void add(K key, V val) {
-        cache.put(key, val);//adding duplicates doesnt affect maps
+        cache.put(key, val);
 
         //TODO added at...
         if(!trackingMap.containsKey(key)){

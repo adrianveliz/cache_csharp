@@ -10,7 +10,7 @@ for resultFile in resultsFiles:
 		data = []
 		for line in rawFile:
 			if "intervalDooms" in line:
-				data.append(int(line.split("= ")[1]) % 80)#to remove huge outlier, a bad hack i know
+				data.append(int(line.split("= ")[1]))
 		
 	alldata.append(data)#list of all data
 

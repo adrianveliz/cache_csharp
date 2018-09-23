@@ -54,7 +54,8 @@ public class FinalCacheTest extends TestUtils{
             System.out.println("Starting test of size " + size);
             t.iterateLogs();
             System.out.println("t.maxSize = " + t.maxSize);
-            System.out.println("t.lruhits = " + t.hits);
+            System.out.println("t.fcachehits = " + t.hits);
+            System.out.println();
         }
 
         /*
