@@ -58,7 +58,7 @@ public class LruTest extends TestUtils{
             System.out.println("lru.lruhits: " + test.lruhits);
             System.out.println("test.fcacheHits: " + test.fcacheHits);
             System.out.println("test.potential: " + test.potential);
-            System.out.println("actual duplication: " + (test.fcacheHits - test.lruhits));
+            System.out.println("in use misses: " + (test.fcacheHits - test.lruhits));
             System.out.println();
         }
     }

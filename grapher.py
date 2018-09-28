@@ -6,13 +6,13 @@ import os
 resultsFiles = os.listdir("results")
 alldata = []
 for resultFile in resultsFiles:
-	with open("results/" + resultFile) as rawFile:
-		data = []
-		for line in rawFile:
-			if "intervalDooms" in line:
-				data.append(int(line.split("= ")[1]))
-		
-	alldata.append(data)#list of all data
+    with open("results/" + resultFile) as rawFile:
+        data = []
+        for line in rawFile:
+            if "intervalDooms" in line:
+                data.append(int(line.split("= ")[1]))
+
+    alldata.insert(0, data)  # os.listdir() lists files in opposite order than you'd thing
 
 plt.boxplot(alldata)
 

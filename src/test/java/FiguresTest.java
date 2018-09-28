@@ -7,7 +7,6 @@ public class FiguresTest extends TestUtils{
     int additions;
     int removals;
     int dooms;
-
     int accesses;
 
     /**
@@ -15,11 +14,15 @@ public class FiguresTest extends TestUtils{
      */
     HashSet<String> keys = new HashSet<>();
 
+    /**
+     * Miss was unavoidable if there was an access but never an add for an entry
+     */
+    int unavoidableMisses;
+
     @Override
     void newEntryHandler(String entry) {
         additions++;
         keys.add(entry);
-//        System.out.println(entry);
     }
 
     @Override
@@ -35,6 +38,9 @@ public class FiguresTest extends TestUtils{
     @Override
     void accessHandler(String entry) {
         accesses++;
+        if(!keys.contains(entry)){
+            unavoidableMisses++;
+        }
     }
 
     public static void main(String[] args) throws FileNotFoundException {
@@ -47,6 +53,7 @@ public class FiguresTest extends TestUtils{
             System.out.println("test.dooms = " + test.dooms);
             System.out.println("test.removals = " + test.removals);
             System.out.println("test.accesses = " + test.accesses);
+            System.out.println("test.unavoidableMisses = " + test.unavoidableMisses);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
