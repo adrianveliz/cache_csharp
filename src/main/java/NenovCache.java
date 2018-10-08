@@ -28,7 +28,11 @@ public class NenovCache {
      * @param key The key to be added to the cache
      */
     public void add(String key){
-        strongCache.put(key, false);
+        if(!strongCache.containsKey(key)||!weakCache.containsKey(key))
+        {
+            strongCache.putIfAbsent(key,false);
+            weakCache.remove(key);
+        }
     }
 
     /**
@@ -37,10 +41,10 @@ public class NenovCache {
      */
     public void update(String entry){
         //if it is in strongCache and if it has not been doomed
-        if(strongCache.containsKey(entry) && !strongCache.get(entry)){
+        if(strongCache.containsKey(entry) ){//&& !strongCache.get(entry)){
             //set the flag to true because its been doomed
             //it will be set back if the entry is accessed
-            strongCache.put(entry, true);
+            strongCache.replace(entry, true);
         }
         else if(weakCache.containsKey(entry)){
             //if its in the weakCache just remove it
@@ -74,11 +78,19 @@ public class NenovCache {
      */
     public boolean get(String key){
         if(strongCache.containsKey(key)){
-            strongCache.put(key, false);//its been accessed so set flag to false
-            return strongCache.get(key);
+            boolean flag = strongCache.get(key);//its been accessed so set flag to false
+            strongCache.replace(key,flag);
+            return true ;//strongCache.get(key);
         }
-        else {
-            return weakCache.containsKey(key);
+        else if(weakCache.containsKey(key)) {
+            weakCache.remove(key);
+            strongCache.putIfAbsent(key, false);
+            strongCache.get(key);
+            return true;
+        }
+        else{
+            return false;
+//            return weakCache.containsKey(key);
         }
     }
 
