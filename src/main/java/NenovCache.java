@@ -28,7 +28,11 @@ public class NenovCache {
      * @param key The key to be added to the cache
      */
     public void add(String key){
-        if(!strongCache.containsKey(key)||!weakCache.containsKey(key))
+        if(this.strongCacheSize == 0)
+        {
+            weakCache.add(key,null);
+        }
+        else if(!strongCache.containsKey(key)||!weakCache.containsKey(key))
         {
             strongCache.putIfAbsent(key,false);
             weakCache.remove(key);
@@ -77,6 +81,10 @@ public class NenovCache {
      * @return If key is in strongcache return its flag value. Otherwise return whether key is in weakcache.
      */
     public boolean get(String key){
+        if (strongCacheSize == 0)
+        {
+            return weakCache.containsKey(key);
+        }
         if(strongCache.containsKey(key)){
             boolean flag = strongCache.get(key);//its been accessed so set flag to false
             strongCache.replace(key,flag);

@@ -5,7 +5,7 @@ import sys
 
 data = []
 for line in sys.stdin:
-	data.append(int(line))
+	data.append(int(line.split(" ")[1]))
 
 plt.hist(data)
 
