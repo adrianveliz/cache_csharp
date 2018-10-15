@@ -36,7 +36,7 @@ public class FinalCache<K, V> {
     }
 
     public int size(){
-        return cache.size();
+        return cache.size()+doomed.size();
     }
 
     public void remove(K key){
@@ -51,35 +51,36 @@ public class FinalCache<K, V> {
     }
 
     public void add(K key, V val) {
-        cache.put(key, val);
-
+        cache.remove(key);
+        cache.putIfAbsent(key,val);
+        doomed.remove(key);
         //TODO added at...
         if(!trackingMap.containsKey(key)){
-            trackingMap.put(key, new Tracker());
+            trackingMap.putIfAbsent(key, new Tracker());
         }
     }
 
     public void add(K key, V val, int addedAt){
-        cache.put(key, val);
+        cache.remove(key);
+        cache.putIfAbsent(key, val);
+        doomed.remove(key);
         if(!trackingMap.containsKey(key)){
-            trackingMap.put(key, new Tracker(addedAt));
+            trackingMap.putIfAbsent(key, new Tracker(addedAt));
         }
     }
 
     public V get(K key) {
         if(key == null) return null;
-        if(cache.containsKey(key)){
-            trackingMap.get(key).gets++;
-            return cache.get(key);
-        }
-        else if(doomed.containsKey(key)){//doomed contains key
+        if(doomed.containsKey(key)){//doomed contains key
             V c = doomed.get(key);
-            //move from doomed to regular set
-            doomed.remove(key);
-            cache.put(key, c);
-
             trackingMap.get(key).gets++;
             return c;
+        }
+
+        else if(cache.containsKey(key)){
+            trackingMap.get(key).gets++;
+            doomed.remove(key);
+            return cache.get(key);
         }
         return null;
     }
@@ -94,7 +95,14 @@ public class FinalCache<K, V> {
             //move from cache to doomed set
             V c = cache.get(key);
             cache.remove(key);
-            doomed.put(key, c);
+            doomed.remove(key);
+            doomed.putIfAbsent(key, c);
+        }
+        else if(doomed.containsKey(key)) {
+            System.out.println("That's odd: "+key.toString());
+        }
+        else{
+            //System.out.println("Doom without an add:"+key.toString());
         }
     }
 

@@ -46,7 +46,6 @@ public class NenovCacheTest extends TestUtils{
                 2000, 3000, 4000, 5000, 6000, 7000,
                 8000, 9000, 10_000};
 
-        //int [] nums = {0,1,2,5,10,50,60,70,80,90,100};
         for (int num : nums) {
             System.out.println("Starting test of size: " + (num));
             n = new NenovCacheTest(num);

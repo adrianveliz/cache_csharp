@@ -34,6 +34,7 @@ public class NenovCache {
         }
         else if(!strongCache.containsKey(key)||!weakCache.containsKey(key))
         {
+            strongCache.remove(key);
             strongCache.putIfAbsent(key,false);
             weakCache.remove(key);
         }
@@ -98,7 +99,6 @@ public class NenovCache {
         }
         else{
             return false;
-//            return weakCache.containsKey(key);
         }
     }
 

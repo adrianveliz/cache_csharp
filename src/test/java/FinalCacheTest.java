@@ -20,7 +20,7 @@ public class FinalCacheTest extends TestUtils{
         //keeping track of keys
         //adding this as val to not
         //break check for lruhits
-        cache.add(entry, entry);
+        cache.add(entry, "");//entry);
         maxSize = Math.max(maxSize, cache.size());
     }
 
@@ -46,15 +46,16 @@ public class FinalCacheTest extends TestUtils{
     public static void main(String[] args) throws FileNotFoundException {
         FinalCacheTest t;
         int[] nums =
-                {0, 50, 100, 250, 500, 1000 /*, 1200,
+                {0, 50, 100, 250, 500, 1000 , 1200,
                         2000, 3000, 4000, 5000, 6000, 7000,
-                        8000, 9000, 10_000*/};
+                        8000, 9000, 10_000};
         for(int size : nums){
             t = new FinalCacheTest(size);
             System.out.println("Starting test of size " + size);
             t.iterateLogs();
             System.out.println("t.maxSize = " + t.maxSize);
             System.out.println("t.fcachehits = " + t.hits);
+            System.out.println();
             System.out.println();
         }
 
